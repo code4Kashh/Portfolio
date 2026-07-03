@@ -118,7 +118,7 @@ nav{
 nav.scrolled{background:rgba(10,10,12,0.7);backdrop-filter:blur(16px);padding:16px 6vw;border-bottom:1px solid var(--border);}
 .nav-logo{font-family:var(--font-display);font-weight:700;font-size:19px;color:var(--white);letter-spacing:-.02em;}
 .nav-logo span{color:var(--accent);}
-.nav-links{display:flex;gap:38px;list-style:none;}
+.nav-links{display:flex;gap:38px;list-style:none;position:relative;}
 .nav-links a{
   font-family:var(--font-mono);font-size:13px;color:var(--gray-300);position:relative;
   padding-bottom:4px;transition:color .3s;
@@ -126,6 +126,14 @@ nav.scrolled{background:rgba(10,10,12,0.7);backdrop-filter:blur(16px);padding:16
 .nav-links a::after{content:'';position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--accent);transition:width .35s var(--ease-out);}
 .nav-links a:hover{color:var(--white);}
 .nav-links a:hover::after{width:100%;}
+.nav-links a.active{color:var(--white);}
+.nav-indicator{
+  position:absolute;bottom:-6px;left:0;height:2px;width:0;border-radius:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-light));
+  box-shadow:0 0 10px var(--accent-glow);
+  transition:transform .45s var(--ease-out),width .45s var(--ease-out),opacity .3s;
+  opacity:0;pointer-events:none;
+}
 .nav-cta{
   font-family:var(--font-mono);font-size:12.5px;padding:11px 22px;border:1px solid var(--border-hover);
   border-radius:100px;color:var(--white);transition:.3s;position:relative;overflow:hidden;
@@ -140,6 +148,7 @@ nav.scrolled{background:rgba(10,10,12,0.7);backdrop-filter:blur(16px);padding:16
   .nav-links a{font-size:19px;}
   .nav-burger{display:flex;}
   .nav-cta{display:none;}
+  .nav-indicator{display:none;}
 }
 
 /* ============================================================
@@ -289,6 +298,7 @@ h1.hero-title .accent-text{color:var(--accent);}
   border:1px solid var(--border);border-radius:100px;white-space:nowrap;transition:.3s;
 }
 .marquee span:hover{color:var(--white);border-color:var(--accent);}
+.marquee-wrap:hover .marquee{animation-play-state:paused;}
 @keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
 /* ============================================================
@@ -327,7 +337,8 @@ h1.hero-title .accent-text{color:var(--accent);}
 .project-body p{color:var(--gray-500);font-size:14.5px;line-height:1.7;margin-bottom:14px;}
 .project-metric{font-family:var(--font-mono);font-size:12px;color:var(--accent-light);margin-bottom:16px;}
 .badge-row{display:flex;flex-wrap:wrap;gap:8px;}
-.badge{font-family:var(--font-mono);font-size:10.5px;color:var(--gray-300);border:1px solid var(--border);padding:5px 12px;border-radius:100px;}
+.badge{font-family:var(--font-mono);font-size:10.5px;color:var(--gray-300);border:1px solid var(--border);padding:5px 12px;border-radius:100px;transition:border-color .3s,color .3s,transform .3s var(--ease-out);}
+.badge:hover{border-color:var(--accent);color:var(--white);transform:translateY(-2px);}
 
 /* ============================================================
    EXPERIENCE — STRAIGHT TIMELINE (draws in as you scroll)
@@ -378,10 +389,96 @@ h1.hero-title .accent-text{color:var(--accent);}
 .impact-card p{color:var(--gray-500);font-size:15px;line-height:1.8;max-width:720px;margin-bottom:32px;}
 .impact-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
 .impact-stats.cols-3{grid-template-columns:repeat(3,1fr);}
-.impact-stats .i-stat{background:var(--bg);padding:26px 16px;text-align:center;}
+.impact-stats .i-stat{background:var(--bg);padding:26px 16px;text-align:center;transition:background .3s,transform .3s var(--ease-out);}
+.impact-stats .i-stat:hover{background:var(--bg-elevated);transform:translateY(-3px);}
 .impact-stats b{font-family:var(--font-display);font-size:clamp(20px,2.4vw,28px);color:var(--white);display:block;letter-spacing:-.02em;}
 .impact-stats span{font-family:var(--font-mono);font-size:9.5px;color:var(--gray-500);letter-spacing:.06em;text-transform:uppercase;display:block;margin-top:6px;}
 @media (max-width:768px){ .impact-stats{grid-template-columns:repeat(2,1fr);} .impact-card{padding:32px 26px;} }
+
+/* "Beyond the codebase" — leadership card gets extra 3D treatment */
+.showcase-stage{position:relative;margin-top:56px;}
+.showcase-card{position:relative;overflow:visible;margin-top:0;isolation:isolate;}
+.showcase-card::after{
+  content:'';position:absolute;inset:0;border-radius:24px;z-index:-1;background:var(--bg-elevated);
+  border:1px solid var(--border);transform:translate(8px,10px) rotate(var(--tilt-rest,0deg));
+  opacity:.55;transition:transform .4s var(--ease-out);pointer-events:none;
+}
+.showcase-card:hover::after{transform:translate(12px,15px) rotate(var(--tilt-rest,0deg));}
+.showcase-spotlight{
+  position:absolute;inset:0;border-radius:24px;pointer-events:none;z-index:0;
+  background:radial-gradient(360px circle at var(--mx,50%) var(--my,50%), rgba(156,150,255,.16), transparent 65%);
+  opacity:0;transition:opacity .5s;
+}
+.showcase-card:hover .showcase-spotlight{opacity:1;}
+.showcase-card > *:not(.showcase-spotlight):not(.showcase-badge){position:relative;z-index:1;}
+.showcase-badge{
+  position:absolute;top:-28px;right:40px;width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(155deg, var(--accent-light), var(--accent-dark));
+  display:flex;align-items:center;justify-content:center;z-index:2;
+  box-shadow:0 22px 44px -16px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,.3);
+  animation:badgeFloat 6s ease-in-out infinite;
+}
+.showcase-badge::before{
+  content:'';position:absolute;inset:-12px;border-radius:50%;z-index:-1;
+  background:conic-gradient(from 0deg, var(--accent), transparent 35%, var(--accent-light), transparent 75%, var(--accent));
+  opacity:.55;filter:blur(7px);animation:haloSpin 5s linear infinite;
+}
+.showcase-badge svg{width:28px;height:28px;fill:#fff;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));}
+@keyframes badgeFloat{
+  0%,100%{transform:translateY(0) rotateY(0deg);}
+  50%{transform:translateY(-9px) rotateY(180deg);}
+}
+@keyframes haloSpin{to{transform:rotate(360deg);}}
+.showcase-stats{background:none;border:none;gap:18px;}
+.showcase-stats .i-stat{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:26px 16px;
+  box-shadow:0 22px 44px -26px rgba(0,0,0,.65);transition:border-color .3s,box-shadow .3s;will-change:transform;
+}
+.showcase-stats .i-stat:hover{border-color:var(--accent);box-shadow:0 26px 54px -22px rgba(108,99,255,.35);}
+.i-stat-icon{width:20px;height:20px;stroke:var(--accent-light);stroke-width:2;margin:0 auto 10px;display:block;}
+@media (max-width:768px){
+  .showcase-badge{width:52px;height:52px;top:-20px;right:24px;}
+  .showcase-badge svg{width:22px;height:22px;}
+  .showcase-stage .curiosity-item{display:none;}
+}
+
+/* "Beyond the codebase" — orbiting hub instead of badge/chips (kept distinct from Publications) */
+.orbit-card{position:relative;overflow:visible;isolation:isolate;}
+.orbit-card::after{
+  content:'';position:absolute;inset:0;border-radius:24px;z-index:-1;background:var(--bg-elevated);
+  border:1px solid var(--border);transform:translate(8px,10px) rotate(var(--tilt-rest,0deg));
+  opacity:.55;transition:transform .4s var(--ease-out);pointer-events:none;
+}
+.orbit-card:hover::after{transform:translate(12px,15px) rotate(var(--tilt-rest,0deg));}
+.orbit-layout{display:grid;grid-template-columns:200px 1fr;gap:44px;align-items:center;}
+.orbit-wrap{position:relative;width:200px;height:200px;margin:0 auto;}
+.orbit-ring-track{position:absolute;top:50%;left:50%;width:152px;height:152px;margin:-76px;border:1px dashed var(--border);border-radius:50%;}
+.orbit-hub{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:66px;height:66px;border-radius:50%;
+  background:linear-gradient(155deg, var(--accent-light), var(--accent-dark));display:flex;align-items:center;justify-content:center;
+  box-shadow:0 22px 44px -16px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,.3);z-index:2;
+}
+.orbit-hub::before{
+  content:'';position:absolute;inset:-14px;border-radius:50%;z-index:-1;
+  background:radial-gradient(circle, var(--accent-glow), transparent 70%);opacity:.55;filter:blur(7px);
+  animation:orbitPulse 3.4s ease-in-out infinite;
+}
+.orbit-hub-icon{width:26px;height:26px;stroke:#fff;stroke-width:2;fill:none;}
+@keyframes orbitPulse{0%,100%{transform:scale(1);opacity:.5;}50%{transform:scale(1.15);opacity:.7;}}
+.orbit-item{position:absolute;top:50%;left:50%;width:0;height:0;animation:orbitSpin 12s linear infinite;}
+.orbit-icon-wrap{
+  position:absolute;top:-19px;left:57px;width:38px;height:38px;border-radius:50%;
+  background:var(--bg-card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 14px 28px -14px rgba(0,0,0,.6);animation:orbitCounterSpin 12s linear infinite;
+  transition:border-color .3s,box-shadow .3s;
+}
+.orbit-icon-wrap svg{width:16px;height:16px;stroke:var(--accent-light);stroke-width:2;fill:none;}
+@keyframes orbitSpin{to{transform:rotate(360deg);}}
+@keyframes orbitCounterSpin{to{transform:rotate(-360deg);}}
+@media (max-width:820px){
+  .orbit-layout{grid-template-columns:1fr;}
+  .orbit-wrap{margin:0 auto 32px;}
+}
 
 /* Research interests — floating collage ("What keeps me curious") */
 .curiosity-stage{
@@ -543,6 +640,7 @@ footer .f-note{font-family:var(--font-mono);font-size:11px;color:var(--gray-700)
 <nav id="nav">
   <div class="nav-logo">KG<span>.</span></div>
   <ul class="nav-links" id="navLinks">
+    <span class="nav-indicator" id="navIndicator"></span>
     <li><a href="#about" class="nav-link">About</a></li>
     <li><a href="#experience" class="nav-link">Experience</a></li>
     <li><a href="#projects" class="nav-link">Work</a></li>
@@ -591,7 +689,7 @@ footer .f-note{font-family:var(--font-mono);font-size:11px;color:var(--gray-700)
   <div class="container about-grid">
     <div class="about-terminal reveal-scale">
       <div class="terminal-bar"><span></span><span></span><span></span></div>
-      <div class="terminal-body">
+      <div class="terminal-body" id="terminalBody">
         <p><span class="t-prompt">$</span>whoami</p>
         <p class="t-out">kashish_garg</p>
         <p><span class="t-prompt">$</span>cat role.txt</p>
@@ -736,14 +834,24 @@ footer .f-note{font-family:var(--font-mono);font-size:11px;color:var(--gray-700)
   <div class="container">
     <div class="eyebrow reveal-up">Publications</div>
     <h2 class="section-title reveal-up">Peer-reviewed work</h2>
-    <div class="impact-card tilt reveal-up">
-      <div class="i-venue">SPRINGER LNCS · PRESENTED AT ICDCIT 2026</div>
-      <h3>A Novel Explainable Multimodal Edge Framework for Stress Detection</h3>
-      <p>This research proposes an explainable multimodal edge-computing framework for stress detection by integrating machine learning with edge computing principles. The work focuses on improving model interpretability while enabling efficient deployment on edge devices for healthcare applications.</p>
-      <div class="impact-stats cols-3">
-        <div class="i-stat"><b class="counter" data-target="34">0</b><span>Papers Accepted</span></div>
-        <div class="i-stat"><b class="counter" data-target="143">0</b><span>Submissions</span></div>
-        <div class="i-stat"><b>2026</b><span>ICDCIT</span></div>
+    <div class="showcase-stage">
+      <div class="curiosity-item" style="top:-7%;left:-2%;" data-parallax="0.16"><span class="curiosity-chip" style="--r:-6deg;">Explainable AI</span></div>
+      <div class="curiosity-item" style="top:10%;right:-3%;" data-parallax="0.13"><span class="curiosity-chip" style="--r:5deg;">Edge Computing</span></div>
+      <div class="curiosity-item" style="bottom:-7%;right:8%;" data-parallax="0.19"><span class="curiosity-chip" style="--r:-4deg;">Healthcare AI</span></div>
+
+      <div class="impact-card showcase-card tilt reveal-up" style="--tilt-rest:0.5deg;" data-rest="0.5">
+        <div class="showcase-spotlight" aria-hidden="true"></div>
+        <div class="showcase-badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 1.5 L14.7 8.6 L22.5 9.3 L16.6 14.4 L18.4 22 L12 17.9 L5.6 22 L7.4 14.4 L1.5 9.3 L9.3 8.6 Z"/></svg>
+        </div>
+        <div class="i-venue">SPRINGER LNCS · PRESENTED AT ICDCIT 2026</div>
+        <h3>A Novel Explainable Multimodal Edge Framework for Stress Detection</h3>
+        <p>This research proposes an explainable multimodal edge-computing framework for stress detection by integrating machine learning with edge computing principles. The work focuses on improving model interpretability while enabling efficient deployment on edge devices for healthcare applications.</p>
+        <div class="impact-stats cols-3 showcase-stats">
+          <div class="i-stat tilt" data-rest="-1"><svg class="i-stat-icon" data-lucide="file-check"></svg><b class="counter" data-target="34">0</b><span>Papers Accepted</span></div>
+          <div class="i-stat tilt" data-rest="0.8"><svg class="i-stat-icon" data-lucide="inbox"></svg><b class="counter" data-target="143">0</b><span>Submissions</span></div>
+          <div class="i-stat tilt" data-rest="-0.8"><svg class="i-stat-icon" data-lucide="award"></svg><b>2026</b><span>ICDCIT</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -835,14 +943,33 @@ footer .f-note{font-family:var(--font-mono);font-size:11px;color:var(--gray-700)
   <div class="container">
     <div class="eyebrow reveal-up">Leadership</div>
     <h2 class="section-title reveal-up">Beyond the codebase</h2>
-    <div class="impact-card tilt reveal-up">
-      <div class="i-venue">AIESEC · VICE PRESIDENT</div>
-      <h3>Leading people, not just projects</h3>
-      <p>Led 100+ members, improved onboarding efficiency by 35%, coordinated 10+ international cultural exchange programs, and managed cross-functional teams while delivering impactful volunteer experiences.</p>
-      <div class="impact-stats cols-3">
-        <div class="i-stat"><b class="counter" data-target="100">0</b><span>+ Members Led</span></div>
-        <div class="i-stat"><b class="counter" data-target="35">0</b><span>% Onboarding Efficiency</span></div>
-        <div class="i-stat"><b class="counter" data-target="10">0</b><span>+ Exchange Programs</span></div>
+    <div class="impact-card orbit-card tilt reveal-up" style="--tilt-rest:-0.5deg;" data-rest="-0.5">
+      <div class="orbit-layout">
+        <div class="orbit-wrap" aria-hidden="true">
+          <div class="orbit-ring-track"></div>
+          <div class="orbit-hub">
+            <svg class="orbit-hub-icon" data-lucide="user"></svg>
+          </div>
+          <div class="orbit-item" style="animation-delay:0s;">
+            <div class="orbit-icon-wrap" style="animation-delay:0s;"><svg data-lucide="users"></svg></div>
+          </div>
+          <div class="orbit-item" style="animation-delay:-4s;">
+            <div class="orbit-icon-wrap" style="animation-delay:-4s;"><svg data-lucide="globe"></svg></div>
+          </div>
+          <div class="orbit-item" style="animation-delay:-8s;">
+            <div class="orbit-icon-wrap" style="animation-delay:-8s;"><svg data-lucide="trending-up"></svg></div>
+          </div>
+        </div>
+        <div class="orbit-content">
+          <div class="i-venue">AIESEC · VICE PRESIDENT</div>
+          <h3>Leading people, not just projects</h3>
+          <p>Led 100+ members, improved onboarding efficiency by 35%, coordinated 10+ international cultural exchange programs, and managed cross-functional teams while delivering impactful volunteer experiences.</p>
+          <div class="impact-stats cols-3 showcase-stats">
+            <div class="i-stat tilt" data-rest="-1"><svg class="i-stat-icon" data-lucide="users"></svg><b class="counter" data-target="100">0</b><span>+ Members Led</span></div>
+            <div class="i-stat tilt" data-rest="0.8"><svg class="i-stat-icon" data-lucide="trending-up"></svg><b class="counter" data-target="35">0</b><span>% Onboarding Efficiency</span></div>
+            <div class="i-stat tilt" data-rest="-0.8"><svg class="i-stat-icon" data-lucide="globe"></svg><b class="counter" data-target="10">0</b><span>+ Exchange Programs</span></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1051,6 +1178,46 @@ document.getElementById('navBurger').addEventListener('click', ()=>{
   document.getElementById('navLinks').classList.toggle('open');
 });
 
+/* ============ NAV — active-section scrollspy with sliding indicator ============ */
+(function setupNavScrollspy(){
+  const navLinksEl = document.getElementById('navLinks');
+  const indicator = document.getElementById('navIndicator');
+  const links = Array.from(document.querySelectorAll('.nav-link'));
+  if(!navLinksEl || !indicator || !links.length) return;
+
+  const sections = links
+    .map(link=>({link, section: document.querySelector(link.getAttribute('href'))}))
+    .filter(x=>x.section);
+
+  function moveIndicatorTo(link){
+    if(!matchMedia('(min-width:901px)').matches){ indicator.style.opacity='0'; return; }
+    const linkRect = link.getBoundingClientRect();
+    const parentRect = navLinksEl.getBoundingClientRect();
+    indicator.style.width = linkRect.width+'px';
+    indicator.style.transform = `translateX(${linkRect.left - parentRect.left}px)`;
+    indicator.style.opacity = '1';
+  }
+
+  function setActive(link){
+    links.forEach(l=>l.classList.remove('active'));
+    if(link){ link.classList.add('active'); moveIndicatorTo(link); }
+    else { indicator.style.opacity = '0'; }
+  }
+
+  let currentActive = null;
+  const spyIO = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const match = sections.find(x=>x.section === entry.target);
+        if(match){ currentActive = match.link; setActive(match.link); }
+      }
+    });
+  }, {rootMargin:'-45% 0px -45% 0px', threshold:0});
+  sections.forEach(x=>spyIO.observe(x.section));
+
+  window.addEventListener('resize', ()=>{ if(currentActive) moveIndicatorTo(currentActive); });
+})();
+
 /* ============ SCROLL PROGRESS ============ */
 function updateScrollProgress(){
   const h = document.documentElement;
@@ -1161,6 +1328,69 @@ document.querySelectorAll('[data-parallax]').forEach(el=>{
     el.style.transform = `translate(${nx}px, ${ny}px)`;
   });
 });
+
+/* ============ ABOUT TERMINAL — typewriter effect ============ */
+(function setupTerminalTypewriter(){
+  const body = document.getElementById('terminalBody');
+  if(!body || reduceMotion) return;
+
+  const lines = [
+    {cmd:'whoami', out:'kashish_garg'},
+    {cmd:'cat role.txt', out:'Final-year ECE student building AI systems'},
+    {cmd:'ls interests/', out:'computer-vision/&nbsp;&nbsp;nlp/&nbsp;&nbsp;edge-ai/&nbsp;&nbsp;accessibility-tech/'},
+    {cmd:'status', out:'open to full-time roles — 2026'}
+  ];
+
+  function typeLine(container, text, speed, done){
+    let i = 0;
+    (function step(){
+      container.textContent = text.slice(0, i);
+      i++;
+      if(i <= text.length){ setTimeout(step, speed); }
+      else if(done){ done(); }
+    })();
+  }
+
+  function runTypewriter(){
+    body.innerHTML = '';
+    let idx = 0;
+    function nextLine(){
+      if(idx >= lines.length){
+        const finalP = document.createElement('p');
+        finalP.innerHTML = '<span class="t-prompt">$</span> <span class="t-cursor">▍</span>';
+        body.appendChild(finalP);
+        return;
+      }
+      const {cmd, out} = lines[idx++];
+      const cmdP = document.createElement('p');
+      const promptSpan = document.createElement('span');
+      promptSpan.className = 't-prompt'; promptSpan.textContent = '$';
+      const cmdSpan = document.createElement('span');
+      cmdP.appendChild(promptSpan); cmdP.appendChild(cmdSpan);
+      body.appendChild(cmdP);
+      typeLine(cmdSpan, cmd, 32, ()=>{
+        setTimeout(()=>{
+          const outP = document.createElement('p');
+          outP.className = 't-out';
+          outP.innerHTML = out;
+          outP.style.opacity = '0';
+          outP.style.transition = 'opacity .3s';
+          body.appendChild(outP);
+          requestAnimationFrame(()=>{ outP.style.opacity = '1'; });
+          setTimeout(nextLine, 260);
+        }, 200);
+      });
+    }
+    nextLine();
+  }
+
+  const termIO = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){ runTypewriter(); termIO.unobserve(entry.target); }
+    });
+  }, {threshold:0.4});
+  termIO.observe(document.getElementById('about') || body);
+})();
 
 /* ============ SCROLL REVEALS ============ */
 document.querySelectorAll('.reveal-up').forEach(el=>{
@@ -1388,6 +1618,15 @@ document.querySelectorAll('.counter').forEach(el=>counterIO.observe(el));
   }
 })();
 
+
+/* ============ LEADERSHIP CARD — cursor-tracking spotlight ============ */
+document.querySelectorAll('.showcase-card').forEach(card=>{
+  card.addEventListener('mousemove', e=>{
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', ((e.clientX - r.left)/r.width*100).toFixed(1)+'%');
+    card.style.setProperty('--my', ((e.clientY - r.top)/r.height*100).toFixed(1)+'%');
+  });
+});
 
 /* ============ 3D TILT (cards throughout the site) ============ */
 document.querySelectorAll('.tilt').forEach(card=>{
